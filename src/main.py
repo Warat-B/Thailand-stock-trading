@@ -1,4 +1,4 @@
-from indicator import ema, get_rate_of_change, getBeta
+from indicator import *
 import numpy as np
 import os
 import pandas as pd
@@ -6,6 +6,9 @@ from datetime import datetime
 import time
 import os.path
 import matplotlib.pyplot as plt
+import tkinter as tk
+from tkinter import ttk
+from tkcalendar import Calendar, DateEntry
 from matplotlib.dates import DateFormatter, WeekdayLocator,\
     DayLocator, MONDAY
 from mplfinance.original_flavor import candlestick_ohlc
@@ -29,8 +32,6 @@ def load_OHLC(symbol, dates,
     df_main = df_main.join(df_csv)
     df_main = df_main.dropna(0)
     return df_main
-
-# code from : http://matplotlib.org/examples/pylab_examples/finance_demo.
 
 
 def plotCandlestick(symbol, dates, title="Selected data"):
@@ -77,14 +78,15 @@ def plot_graph(values):
     plt.show()
 
 
-if __name__ == '__main__':
-    startDate = '2021-01-01'
-    # datetime.now() will use your local time zone as refernce
-    endDate = datetime.now().strftime("%Y-%m-%d")
-    dates = pd.date_range(startDate, endDate)
+def print_text():
+    symbol = symbol_entry.get()
+    start_date = start_date_calendar.get_date()
+    end_date = end_date_calendar.get_date()
+    print(symbol, start_date, end_date)
+    dates = pd.date_range(start_date, end_date)
 
     # Load data from csv file
-    ptt_df = load_OHLC("DELTA", dates)
+    ptt_df = load_OHLC(symbol, dates)
     set_df = load_OHLC("set_index", dates, dayfirst=False)
 
     print(ptt_df.tail())
@@ -97,6 +99,42 @@ if __name__ == '__main__':
     ema100 = ema(ptt_df, 100)
     print("+++++Beta+++++")
     beta = getBeta(ptt_df, set_df)
+    beta_label.config(text=str(beta))
     print(beta)
     values = [ptt_df, ema15, ema45, ema100]
+    window.update()
     plot_graph(values)
+
+
+if __name__ == '__main__':
+    # Create simple ui to get symbol input
+    window = tk.Tk()
+    window.title('Beta Calculator')
+    window.configure(background="white")
+
+    style = ttk.Style(window)
+    # change theme, you can use style.theme_names() to list themes
+    style.theme_use('clam')
+
+    tk.Label(window, text="Symbol").grid(row=0)
+    tk.Label(window, text="Start Date").grid(row=1)
+    tk.Label(window, text="End Date").grid(row=2)
+    tk.Label(window, text="Beta").grid(row=3)
+    beta_label = tk.Label(window, text="", borderwidth=2)
+    beta_label.grid(row=3, column=1)
+
+    start_date_calendar = Calendar(
+        window, selecetmode="day", year=2021, month=4)
+    end_date_calendar = Calendar(window, selecetmode="day", year=2021, month=4)
+    symbol_entry = tk.Entry(window, borderwidth=2)
+
+    symbol_entry.grid(row=0, column=1, pady=10)
+    start_date_calendar.grid(row=1, column=1, pady=10)
+    end_date_calendar.grid(row=2, column=1, pady=10)
+
+    symbol_entry.focus_set()
+
+    button = tk.Button(window, text='Submit',
+                       command=print_text)
+    button.grid(row=4, column=1)
+    window.mainloop()
