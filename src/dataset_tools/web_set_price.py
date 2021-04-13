@@ -90,10 +90,10 @@ if __name__ == "__main__":
     # tr_list = table_element.findAll('tr')
     # print(tr_list[0:2])
 
-    symbol_list = ['PTT']
+    symbol_list = ['DELTA']
     for symbol in symbol_list:
         # 1 total_page equal to 29 active days/page not include weekend
-        df = create_all_data(symbol, total_page=4)
+        df = create_all_data(symbol, total_page=3)
         print('\n********* %s **********' % symbol)
         print(df.tail())
 

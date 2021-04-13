@@ -1,4 +1,4 @@
-from indicator import ema
+from indicator import ema, get_rate_of_change, getBeta
 import numpy as np
 import os
 import pandas as pd
@@ -12,15 +12,15 @@ from mplfinance.original_flavor import candlestick_ohlc
 DIR_CSV = 'stock_data'
 
 
-def load_OHLCV(symbol, dates,
-               column_names=['Open', 'High', 'Low', 'Close', 'Total Volume'],
-               base_dir=DIR_CSV):
+def load_OHLC(symbol, dates,
+              column_names=['Open', 'High', 'Low', 'Close'],
+              base_dir=DIR_CSV, dayfirst=True):
     if 'Date' not in column_names:
         column_names = np.append(['Date'], column_names)
 
     csv_file = os.path.join(base_dir, "{}.csv".format(symbol))
     df_csv = pd.read_csv(csv_file, index_col='Date',
-                         parse_dates=True, usecols=column_names,
+                         parse_dates=True, dayfirst=dayfirst, usecols=column_names,
                          na_values=['nan'])
 
     if dates is None:
@@ -78,20 +78,25 @@ def plot_graph(values):
 
 
 if __name__ == '__main__':
-    startDate = '2019-03-01'
+    startDate = '2021-01-01'
     # datetime.now() will use your local time zone as refernce
     endDate = datetime.now().strftime("%Y-%m-%d")
     dates = pd.date_range(startDate, endDate)
-    # print("Load data: PTT")
-    df = load_OHLCV("PTT", dates)
-    print(df.tail())
-    df.drop(['Total Volume'], axis='columns', inplace=True)
+
+    # Load data from csv file
+    ptt_df = load_OHLC("DELTA", dates)
+    set_df = load_OHLC("set_index", dates, dayfirst=False)
+
+    print(ptt_df.tail())
+    # ptt_df.drop(['Total Volume'], axis='columns', inplace=True)
 
     print("+++++EMA+++++")
-    ema15 = ema(df, 15)
+    ema15 = ema(ptt_df, 15)
     print(ema15.tail())
-    ema45 = ema(df, 45)
-    ema100 = ema(df, 100)
-
-    values = [df, ema15, ema45, ema100]
+    ema45 = ema(ptt_df, 45)
+    ema100 = ema(ptt_df, 100)
+    print("+++++Beta+++++")
+    beta = getBeta(ptt_df, set_df)
+    print(beta)
+    values = [ptt_df, ema15, ema45, ema100]
     plot_graph(values)

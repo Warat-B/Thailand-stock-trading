@@ -4,7 +4,16 @@ import pandas as pd
 import numpy as np
 
 
-def roc(df_close, periods=12):
+def get_rate_of_change(df_close, periods=12):
+    """[This is the function to calculate rate of change]
+
+    Args:
+        df_close ([pandas dataframe]): [description]
+        periods (int, optional): [description]. Defaults to 12.
+
+    Returns:
+        [float]: Rate of change
+    """
     # Close - Close n periods ago
     # change_n_period_ago = df_close - df_close.shift(periods)
     change_n_period_ago = df_close.diff(periods)
@@ -16,10 +25,15 @@ def roc(df_close, periods=12):
     return ROC
 
 
+def get_difference_by_period(df_close, periods=1):
+    change_n_period_ago = df_close.diff(periods)
+    return change_n_period_ago
+
+
 def is_strong(df_close, window=12):
     """ In 12 days periods, How many are ROC'security more than ROC' SET (percent %) """
     # df_roc has calculated by daily_returns
-    df_roc = roc(df_close)
+    df_roc = get_rate_of_change(df_close)
 
     # Empty Data Frame
     df_main = pd.DataFrame(index=df_close.index, columns=df_close.columns)
@@ -273,10 +287,10 @@ def ATR(df):
     return df_ATR
 
 
-def getBeta(df, stock_name, benchmark_name):
+def getBeta(stock_df, index_df):
     # Compute returns of stock
-    rs = roc(df[stock_name], periods=1)/100
-    rb = roc(df[benchmark_name], periods=1)/100
+    rs = get_difference_by_period(stock_df.Close, periods=1)
+    rb = get_difference_by_period(index_df.Close, periods=1)
 
     # Beta = Covariance(rs, rb)/Variance(rb)
     # where rs is the return on the stock and rb is the return on a benchmark index.
