@@ -2,3 +2,6 @@
 .vscode
 .DS_store
 beta_list.csv
+__pycache__/
+*.py[cod]
+*.pyc
