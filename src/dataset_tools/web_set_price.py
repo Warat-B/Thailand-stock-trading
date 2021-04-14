@@ -16,6 +16,26 @@ context = ssl._create_unverified_context()
 OUTPUT_DIR = "stock_data"
 
 
+def get_beta_from_set(symbol):
+    beta_values = []
+    url_string = "https://www.set.or.th/set/factsheet.do?symbol={0}".format(
+        symbol)
+    # url_string += '&page={0}&language=en&country=US&type=trading'.format(
+    #     page-1)
+
+    page = urllib.request.urlopen(url_string, context=context).read()
+    soup = BeautifulSoup(page, 'lxml')
+    beta_table = soup.find(text='Beta').parent.parent
+
+    for beta_value in beta_table.find_all(recursive=False):
+        try:
+            beta_values.append(float(beta_value.get_text()))
+        except:
+            pass
+
+    return beta_values
+
+
 def getTableData(symbol, page=1):
     if page > 3:
         page = 3  # limit at 3
@@ -85,6 +105,7 @@ def removeOldFile(symbol, output_path=OUTPUT_DIR):
 
 
 if __name__ == "__main__":
+    get_beta_from_set("PTT")
     # Get tabel data
     # table_element, url_string = getTableData("PTT")
     # tr_list = table_element.findAll('tr')

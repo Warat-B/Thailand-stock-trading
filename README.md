@@ -10,4 +10,4 @@
 
 ## Use Guide
 
-- To get beta value, run `python src/main.py`
+- To get beta value, run `python src/beta_scraper.py`
