@@ -23,6 +23,7 @@ def get_beta():
     df = pd.DataFrame(beta_object)
     df.set_index('Symbol')
     df.to_csv('beta_list.csv', index=False)
+    print('Done scraping')
     return df
 
 
