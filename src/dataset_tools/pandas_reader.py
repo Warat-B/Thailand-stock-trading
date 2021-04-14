@@ -102,8 +102,9 @@ def clearDir(dirPath):
     makedirs(dirPath)
 
 
-DIR_CURRENT = os.path.dirname(__file__)
-DIR_SEC_CSV_YAHOO = "sec_csv_yahoo"
+# DIR_CURRENT = os.path.dirname(__file__)
+DIR_CURRENT = ""
+DIR_SEC_CSV_YAHOO = "stock_data"
 
 
 def createSymbolCSV(df, symbol, outputPath=DIR_SEC_CSV_YAHOO):

@@ -79,19 +79,19 @@ def plot_graph(values):
     plt.show()
 
 
-def print_text():
-
+def calculate_beta():
+    # Extract input values from ui
     symbol = symbol_entry.get()
     start_date = start_date_calendar.get_date()
     end_date = end_date_calendar.get_date()
     print(symbol, start_date, end_date)
     dates = pd.date_range(start_date, end_date)
 
-    # Download latest data
+    # Download latest stock data
     df = load_OHLCV(symbol, start_date, end_date)
     df.drop(['Volume', 'Adj Close'], axis='columns', inplace=True)
 
-    # Load data from csv file
+    # Load set index data
     set_df = load_OHLC_from_csv("set_index", dates, dayfirst=False)
 
     print(df.tail())
@@ -138,6 +138,6 @@ if __name__ == '__main__':
     symbol_entry.focus_set()
 
     button = tk.Button(window, text='Submit',
-                       command=print_text)
+                       command=calculate_beta)
     button.grid(row=4, column=1)
     window.mainloop()
