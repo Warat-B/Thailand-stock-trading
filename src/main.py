@@ -1,4 +1,5 @@
 from indicator import *
+from dataset_tools.pandas_reader import load_OHLCV
 import numpy as np
 import os
 import pandas as pd
@@ -15,9 +16,9 @@ from mplfinance.original_flavor import candlestick_ohlc
 DIR_CSV = 'stock_data'
 
 
-def load_OHLC(symbol, dates,
-              column_names=['Open', 'High', 'Low', 'Close'],
-              base_dir=DIR_CSV, dayfirst=True):
+def load_OHLC_from_csv(symbol, dates,
+                       column_names=['Open', 'High', 'Low', 'Close'],
+                       base_dir=DIR_CSV, dayfirst=True):
     if 'Date' not in column_names:
         column_names = np.append(['Date'], column_names)
 
@@ -79,29 +80,31 @@ def plot_graph(values):
 
 
 def print_text():
+
     symbol = symbol_entry.get()
     start_date = start_date_calendar.get_date()
     end_date = end_date_calendar.get_date()
     print(symbol, start_date, end_date)
     dates = pd.date_range(start_date, end_date)
 
+    # Download latest data
+    df = load_OHLCV(symbol, start_date, end_date)
+    df.drop(['Volume', 'Adj Close'], axis='columns', inplace=True)
+
     # Load data from csv file
-    ptt_df = load_OHLC(symbol, dates)
-    set_df = load_OHLC("set_index", dates, dayfirst=False)
+    set_df = load_OHLC_from_csv("set_index", dates, dayfirst=False)
 
-    print(ptt_df.tail())
-    # ptt_df.drop(['Total Volume'], axis='columns', inplace=True)
-
+    print(df.tail())
     print("+++++EMA+++++")
-    ema15 = ema(ptt_df, 15)
+    ema15 = ema(df, 15)
     print(ema15.tail())
-    ema45 = ema(ptt_df, 45)
-    ema100 = ema(ptt_df, 100)
+    ema45 = ema(df, 45)
+    ema100 = ema(df, 100)
     print("+++++Beta+++++")
-    beta = getBeta(ptt_df, set_df)
+    beta = getBeta(df, set_df)
     beta_label.config(text=str(beta))
     print(beta)
-    values = [ptt_df, ema15, ema45, ema100]
+    values = [df, ema15, ema45, ema100]
     window.update()
     plot_graph(values)
 

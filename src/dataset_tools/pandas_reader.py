@@ -19,11 +19,9 @@ from mplfinance.original_flavor import candlestick_ohlc
 
 def load_OHLCV(symbol, startdate, enddate):
     df = pdr.get_data_yahoo(symbol+".BK", start=startdate, end=enddate)
-    columnNames = {value: value.upper() for value in df.columns}
-    df.rename(columns=columnNames, inplace=True)
+    # columnNames = {value: value.upper() for value in df.columns}
+    # df.rename(columns=columnNames, inplace=True)
     return df
-
-# I think doesn't work
 
 
 def loadStockQuotes(symbol, startdate, enddate):
