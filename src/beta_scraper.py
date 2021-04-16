@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from dataset_tools.web_set_price import get_beta_from_set
 import pandas as pd
+import numpy as np
 
 
 def get_beta():
@@ -14,6 +15,8 @@ def get_beta():
     beta_object['Symbol'] = symbols
     for symbol in symbols:
         beta_value_buffer = get_beta_from_set(symbol)
+        while (len(beta_value_buffer) < 3):
+            beta_value_buffer.append(np.nan)
         ytd_list.append(beta_value_buffer[0])
         last_year_list.append(beta_value_buffer[1])
         last_2_year_list.append(beta_value_buffer[2])
